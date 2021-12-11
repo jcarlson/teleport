@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     tac (0.1.0)
+      thor (~> 1.1)
 
 GEM
   remote: https://rubygems.org/
@@ -40,6 +41,7 @@ GEM
     rubocop-ast (1.14.0)
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
+    thor (1.1.0)
     unicode-display_width (2.1.0)
 
 PLATFORMS

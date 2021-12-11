@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'tac/cli'
+TAC::CLI.start
