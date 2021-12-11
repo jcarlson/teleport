@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require_relative "tac/version"
+require "tac/packet"
+require "tac/version"
 
 module TAC
   class Error < StandardError; end
