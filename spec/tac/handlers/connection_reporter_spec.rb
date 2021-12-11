@@ -6,7 +6,7 @@ RSpec.describe TAC::Handlers::ConnectionReporter do
     let(:source_port) { rand(1..65535) }
     let(:dest_addr) { '1.2.3.4' }
     let(:dest_port) { rand(1..65535) }
-    let(:packet) { TAC::Packet.new source_addr, source_port, dest_addr, dest_port }
+    let(:packet) { TAC::Models::Packet.new source_addr, source_port, dest_addr, dest_port }
     let(:now) { Time.new 2021, 12, 11, 14, 00, 00, "-07:00" }
 
     subject(:handler) { described_class.new }

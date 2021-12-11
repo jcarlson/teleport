@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe TAC::Packet do
+RSpec.describe TAC::Models::Packet do
   let(:source_addr) { '127.0.0.1' }
   let(:source_port) { 65535 }
   let(:dest_addr) { '1.1.1.1' }
