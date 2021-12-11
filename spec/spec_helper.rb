@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "tac"
+require "timecop"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -12,4 +13,7 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  # before each spec, reset any time travel, to be sure state doesn't cross specs
+  config.before { Timecop.return }
 end
