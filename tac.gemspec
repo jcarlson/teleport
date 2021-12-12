@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "packetfu", "~> 1.1"
   spec.add_dependency "thor", "~> 1.1"
+  spec.add_dependency "prometheus-client", "~> 2.1"
 
   spec.add_development_dependency "aruba", "~> 1.1"
   spec.add_development_dependency "cucumber", "~> 6.1"

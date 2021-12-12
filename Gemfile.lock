@@ -3,6 +3,7 @@ PATH
   specs:
     tac (0.1.0)
       packetfu (~> 1.1)
+      prometheus-client (~> 2.1)
       thor (~> 1.1)
 
 GEM
@@ -74,6 +75,7 @@ GEM
     parser (3.0.3.2)
       ast (~> 2.4.1)
     pcaprub (0.13.1)
+    prometheus-client (2.1.0)
     protobuf-cucumber (3.10.8)
       activesupport (>= 3.2)
       middleware
