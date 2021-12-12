@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     tac (0.1.0)
+      packetfu (~> 1.1)
       thor (~> 1.1)
 
 GEM
@@ -67,9 +68,12 @@ GEM
     mime-types-data (3.2021.1115)
     minitest (5.14.4)
     multi_test (0.1.2)
+    packetfu (1.1.13)
+      pcaprub
     parallel (1.21.0)
     parser (3.0.3.2)
       ast (~> 2.4.1)
+    pcaprub (0.13.1)
     protobuf-cucumber (3.10.8)
       activesupport (>= 3.2)
       middleware

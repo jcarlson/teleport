@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "tac/handlers"
-require "tac/models"
+require "tac/ttl_collection"
 require "tac/version"
 
 module TAC
