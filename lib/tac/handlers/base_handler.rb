@@ -7,6 +7,10 @@ module TAC
         @options = options
       end
 
+      def handle(packet)
+        raise NotImplementedError
+      end
+
       def self.inherited(subclass)
         TAC::Handlers.register(subclass)
       end

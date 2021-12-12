@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe TAC::Handlers::BaseHandler do
-  describe '.print' do
+  describe '::print' do
     let(:now) { Time.new 2021, 12, 11, 14, 00, 00, "-07:00" }
     let(:message) { 'absolutely anything' }
 
