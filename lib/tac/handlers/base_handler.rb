@@ -7,6 +7,10 @@ module TAC
         @options = options
       end
 
+      def self.inherited(subclass)
+        TAC::Handlers.register(subclass)
+      end
+
       def self.print(message)
         puts '%s: %s' % [
           Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'), message
