@@ -1,35 +1,124 @@
-# Teleport Automation Challenge
+# Teleport Automation Challenge (tac)
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/tac`. To experiment with that code, run `bin/console` for an interactive prompt.
+This project implements the Level 4 Automation Challenge for Teleport
 
-TODO: Delete this and the text above, and describe your gem
+## Prerequisites
+
+Local installation and development of this project requires the following frameworks or dependencies to be installed on your system:
+
+- A Linux operating system
+  - This solution does not work, and has not been tested, on other operating systems
+- Ruby 3.0.2 (Ruby 2.4+ will probably work too, but I did not test with older versions)
+  - I recommend using [rbenv](https://github.com/rbenv/rbenv) to install Ruby if your system does not have an adequate version
+  - You may also need to install `ruby-build`
+- Bundler
+  - Ruby installations don't always include the `bundler` gem; `gem install bundler` if you don't have it
+- `libpcap`, `libpcap-dev`
+  - Package names may vary by Linux distribution; on Ubuntu 20.04 it is `libpcap0.8` and `libpcap0.8-dev`
+- `iptables`
+  - For managing the network firewall rules
+- Docker (any recent version should do nicely, tested on 20.10.7)
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Start by cloning this repository:
 
-```ruby
-gem 'tac'
+```bash
+$ git clone git@github.com:jcarlson/teleport.git jc-tac
+$ cd jc-tac
 ```
 
-And then execute:
+Install gem dependencies with Bundler; you can run `bundle install` or just run `bin/setup`
 
-    $ bundle install
+```bash
+$ bundle install
+```
 
-Or install it yourself as:
+## Running tests
 
-    $ gem install tac
+You can run the test suite with Rake. The default Rake task will run RSpec, Cucumber and Rubocop.
 
-## Usage
+```bash
+$ rake
 
-TODO: Write usage instructions here
+# Or just unit tests
+$ rake spec
 
-## Development
+# Or just features
+$ rake cucumber
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+# Or just Rubocop
+$ rake rubocop
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+## Running the application
 
-## Contributing
+Packet capture with Ruby's `pcaprub` Gem requires `root` permissions. 
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/tac.
+You can run the application from the source directory with:
+
+```bash
+$ bundle exec exe/tac <command>
+
+# try `help`
+$ bundle exec exe/tac help
+
+# start the packet capture and mitigation process
+$ [sudo] bundle exec exe/tac start
+```
+
+## Installing the application
+
+You can install the application binaries to your local system with:
+
+```bash
+$ rake install
+```
+
+This will build the Gem and install it to your Ruby Gems installation directory,
+which should make the `tac` executable available system-wide.
+
+Once installed, you can run:
+
+```bash
+$ tac start
+```
+
+### Note
+
+I was about 2/3 of the way through this challenge before I realized that some Linux distributions
+include a built-in called `tac`, which is like `cat` but reads in reverse order.
+
+If you install this gem to your system, make sure your Ruby Gems paths come before any
+other paths.
+
+## Docker and Docker Compose
+
+A Dockerfile is provided, to make installation and execution simpler. Running the app
+in Docker requires a privileged runtime, and to inspect and manage the host's network
+devices, it will need to use the `host` network.
+
+Rake tasks are provided to help with this process:
+
+```bash
+$ rake docker:build
+
+# equivalent to:
+$ docker build -t jcarlson/teleport .
+
+$ rake docker:run
+
+# equivalent to:
+$ docker build -t jcarlson/teleport . && \
+  docker run --privileged --network host -it jcarlson/teleport
+```
+
+### Docker Compose
+
+Docker Compose is also an option. Simply run `docker-compose up` to start the application.
+
+## Prometheus Metrics
+
+Prometheus metrics are provided on the host's port 8080:
+
+[http://<your-server-hostname-or-ip:8080/metrics](http://localhost:8080/metrics)

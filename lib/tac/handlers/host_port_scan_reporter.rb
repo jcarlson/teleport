@@ -38,18 +38,22 @@ module TAC
 
       def log_port_scan(client_connections, packet)
         # print a message if the client has more than three unique port connections in past minute
-        report = format(
+        message = format(
           "Port scan detected: %<source>s -> %<destination>s on ports %<ports>s",
           source: packet.ip_saddr,
           destination: packet.ip_daddr,
           ports: client_connections.values.sort.join(",")
         )
 
-        log report
+        log message
       end
 
       def block_source(source)
         rule = "-p tcp -s #{source} -d #{ifconfig[:ip_saddr]} -j DROP"
+
+        # `system` does not raise an error if the system call fails, so if you don't have iptables installed,
+        # this just won't do anything. In a production environment, we could pretty easily manage the system dependencies
+        # so I haven't spent any time here checking if this call "worked".
         system "iptables -A INPUT #{rule}"
 
         # For the purposes of this code challenge, we will un-block the

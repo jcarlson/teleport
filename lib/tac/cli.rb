@@ -25,8 +25,14 @@ module TAC
     def start
       Thread.new do
         Capture.new(options[:iface], options[:filter]).start
+      rescue RuntimeError => err
+        puts err
+        exit 1
       end
 
+      # For this exercise, we're ignoring SSL since it would require a certificate; in production
+      # this endpoint should probably be secured behind a load balancer or an nginx reverse proxy to manage SSL
+      # termination.
       Rack::Server.start(
         app: TAC::SERVER,
         Host: "0.0.0.0",

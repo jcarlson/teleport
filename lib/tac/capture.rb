@@ -13,7 +13,10 @@ module TAC
     end
 
     def start
-      PacketFu::Capture.new(iface: @iface, filter: @filter % @ifconfig, start: true).tap do |capture|
+      bpf = @filter % @ifconfig
+      puts "Starting packet capture and DDoS mitigation on #{@iface} with filter #{bpf}"
+
+      PacketFu::Capture.new(iface: @iface, filter: bpf, start: true).tap do |capture|
         capture.stream.each do |raw|
           packet = PacketFu::Packet.parse(raw)
           @handlers.each { |handler| handler.handle packet }
