@@ -10,3 +10,16 @@ RuboCop::RakeTask.new
 Cucumber::Rake::Task.new
 
 task default: %i[spec cucumber rubocop]
+
+namespace :docker do
+  desc 'Build the Docker container'
+  task :build do
+    context = File.dirname(__FILE__)
+    system("docker build -t jcarlson/teleport #{context}")
+  end
+
+  desc 'Run the Docker container'
+  task run: [:build] do
+    system("docker run --privileged --network host -it jcarlson/teleport")
+  end
+end
