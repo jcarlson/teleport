@@ -11,7 +11,7 @@ any, I have a nice test suite to add cases to so mistakes are not made twice!
 For human testing here, I used `netcat` primarily, e.g.:
 
 ```bash
-$ for port in 8080 8081 8082 8083 8084; do nc -w2 -z teleport.aws $port; done
+$ for port in 8080 8081 8082 8083 8084; do nc -w2 -z {{target-host}} $port; done
 ```
 
 ### 2. How would you make this solution better?
@@ -21,12 +21,14 @@ with polling, since it's likely to miss connections.
 
 Beyond that, for high-volume systems, Ruby is probably not the _most_ performant runtime
 for this sort of application. I might use C or C++; something that compiles down to
-instructions closer to the metal.
+assembly closer to the metal.
 
 ### 3. Is it possible for this program to miss a connection?
 
 Yes, since we are only polling every 10s, a connection can appear and disappear within 
-a relatively short time nad therefore not appear on this list.
+a relatively short time nad therefore not appear on this list. Specifically, `/proc/net/tcp`
+is unlikely to be very helpful for detecting port scans, since the scanner doesn't typically
+stay connected on any port.
 
 ### 4. If you weren't following these requirements, how would you solve the problem of logging every new connection?
 

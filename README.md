@@ -125,4 +125,6 @@ Docker Compose is also an option. Simply run `docker-compose up` to start the ap
 
 Prometheus metrics are provided on the host's port 8080:
 
-[http://<your-server-hostname-or-ip:8080/metrics](http://localhost:8080/metrics)
+[http://<your-server-hostname-or-ip>:8080/metrics](http://localhost:8080/metrics)
+
+You can customize the port as follows `tac start --port 5000`. 
