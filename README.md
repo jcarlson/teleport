@@ -1,6 +1,10 @@
 # Teleport Automation Challenge (tac)
 
-This project implements the Level 4 Automation Challenge for Teleport
+This project implements the Level 4 Automation Challenge for Teleport.
+
+See the [challenge](CHALLENGE.md).
+
+Also please see my [answers to each level's questions](Q_AND_A.md).
 
 ## Prerequisites
 
