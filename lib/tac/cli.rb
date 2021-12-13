@@ -1,4 +1,5 @@
 require 'tac'
+require 'tac/server'
 require 'thor'
 require 'packetfu'
 
@@ -15,8 +16,20 @@ module TAC
       default: 'tcp and tcp[tcpflags] == tcp-syn and dst host %{ip_saddr}',
       desc: 'BPF filter to use when filtering packets'
 
+    method_option :port,
+      default: '8080',
+      desc: 'TCP port on which to listen and serve up Prometheus metrics'
+
     def start
-      Capture.new(options[:iface], options[:filter]).start
+      Thread.new do
+        Capture.new(options[:iface], options[:filter]).start
+      end
+
+      Rack::Server.start(
+        app: TAC::SERVER,
+        Host: '0.0.0.0',
+        Port: options[:port]
+      )
     end
 
     desc 'version', 'Print the current version'
