@@ -23,7 +23,11 @@ RSpec.describe TAC::Handlers::HostPortScanReporter do
 
     before do
       Timecop.freeze
-      allow(described_class).to receive(:print)
+      allow(described_class)
+        .to receive(:log)
+
+      allow(subject)
+        .to receive(:system)
 
       # pre-load handler by handling packets 1-3 at T-minus :03, :02 and :01 seconds
       packets[0..-2].each_with_index do |packet, offset|
@@ -40,7 +44,7 @@ RSpec.describe TAC::Handlers::HostPortScanReporter do
 
       it 'ignores packet' do
         handler.handle packets.last
-        expect(described_class).to_not have_received(:print)
+        expect(described_class).to_not have_received(:log)
       end
     end
 
@@ -49,7 +53,7 @@ RSpec.describe TAC::Handlers::HostPortScanReporter do
 
       it 'ignores packet' do
         handler.handle packets.last
-        expect(described_class).to_not have_received(:print)
+        expect(described_class).to_not have_received(:log)
       end
     end
 
@@ -58,7 +62,7 @@ RSpec.describe TAC::Handlers::HostPortScanReporter do
 
       it 'ignores packet' do
         handler.handle packets.last
-        expect(described_class).to_not have_received(:print)
+        expect(described_class).to_not have_received(:log)
       end
     end
 
@@ -67,7 +71,7 @@ RSpec.describe TAC::Handlers::HostPortScanReporter do
         Timecop.freeze(Time.now + 70)
         handler.handle packets.last
 
-        expect(described_class).to_not have_received(:print)
+        expect(described_class).to_not have_received(:log)
       end
     end
 
@@ -77,8 +81,16 @@ RSpec.describe TAC::Handlers::HostPortScanReporter do
 
         ports = packets.map(&:tcp_dport).sort.join(",")
 
-        expect(described_class).to have_received(:print)
+        expect(described_class).to have_received(:log)
           .with("Port scan detected: #{source_addr} -> #{dest_addr} on ports #{ports}")
+      end
+
+      it 'configures a firewall rule to block client' do
+        handler.handle packets.last
+
+        expect(subject)
+          .to have_received(:system)
+            .with("iptables -A INPUT -p tcp -s #{source_addr} -d #{dest_addr} -j DROP")
       end
     end
   end

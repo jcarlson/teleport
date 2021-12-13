@@ -34,8 +34,21 @@ module TAC
             client_connections.values.sort.join(",")
           ]
 
-          self.class.print report
+          log report
+          block_source packet.ip_saddr
         end
+      end
+
+      private
+
+      def block_source(source)
+        rule = "-p tcp -s #{source} -d #{ifconfig[:ip_saddr]} -j DROP"
+        system "iptables -A INPUT #{rule}"
+
+        # For the purposes of this code challenge, we will un-block the
+        # source IP after a short time, since anyone testing this probably
+        # doesn't want to be blocked out forever ;-)
+        Thread.new { sleep TTL; system "iptables -D INPUT #{rule}" }
       end
     end
   end

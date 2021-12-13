@@ -14,7 +14,7 @@ module TAC
           packet.tcp_dport
         ]
 
-        self.class.print report
+        log report
       end
     end
   end

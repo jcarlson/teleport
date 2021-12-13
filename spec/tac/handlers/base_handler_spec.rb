@@ -11,7 +11,7 @@ RSpec.describe TAC::Handlers::BaseHandler do
     end
 
     it 'prepends a timestamp to message' do
-      described_class.print(message)
+      described_class.log(message)
       expect($stdout).to have_received(:puts)
         .with("2021-12-11 21:00:00: #{message}")
     end

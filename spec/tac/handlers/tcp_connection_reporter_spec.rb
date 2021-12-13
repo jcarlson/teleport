@@ -20,13 +20,13 @@ RSpec.describe TAC::Handlers::TcpConnectionReporter do
     subject(:handler) { described_class.new }
 
     before do
-      allow(described_class).to receive(:print)
+      allow(described_class).to receive(:log)
     end
 
     it 'prints a formatted message about the new connection' do
       handler.handle packet
 
-      expect(described_class).to have_received(:print)
+      expect(described_class).to have_received(:log)
         .with("New Connection: #{ip_saddr}:#{tcp_sport} -> #{ip_daddr}:#{tcp_dport}")
     end
 
@@ -35,7 +35,7 @@ RSpec.describe TAC::Handlers::TcpConnectionReporter do
 
       it 'ignores packet' do
         handler.handle packet
-        expect(described_class).to_not have_received(:print)
+        expect(described_class).to_not have_received(:log)
       end
     end
 
@@ -44,7 +44,7 @@ RSpec.describe TAC::Handlers::TcpConnectionReporter do
 
       it 'ignores packet' do
         handler.handle packet
-        expect(described_class).to_not have_received(:print)
+        expect(described_class).to_not have_received(:log)
       end
     end
   end
