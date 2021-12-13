@@ -1,18 +1,21 @@
-require 'tac/handlers/base_handler'
+# frozen_string_literal: true
+
+require "tac/handlers/base_handler"
 
 module TAC
   module Handlers
     class TcpConnectionReporter < BaseHandler
       def handle(packet)
         return unless packet.is_a?(PacketFu::TCPPacket) &&
-          packet.tcp_flags.syn == 1
+                      packet.tcp_flags.syn == 1
 
-        report = 'New Connection: %s:%d -> %s:%d' % [
-          packet.ip_saddr,
-          packet.tcp_sport,
-          packet.ip_daddr,
-          packet.tcp_dport
-        ]
+        report = format(
+          "New Connection: %<source_ip>s:%<source_port>d -> %<dest_ip>s:%<dest_port>d",
+          source_ip: packet.ip_saddr,
+          source_port: packet.tcp_sport,
+          dest_ip: packet.ip_daddr,
+          dest_port: packet.tcp_dport
+        )
 
         log report
       end

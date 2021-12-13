@@ -1,5 +1,7 @@
-require 'tac/handlers/base_handler'
-require 'prometheus/client'
+# frozen_string_literal: true
+
+require "tac/handlers/base_handler"
+require "prometheus/client"
 
 module TAC
   module Handlers
@@ -8,13 +10,13 @@ module TAC
         super
 
         Prometheus::Client.registry.tap do |prometheus|
-          @counter = prometheus.counter(:tcp_syn_packets, docstring: 'A counter of TCP-SYN packets')
+          @counter = prometheus.counter(:tcp_syn_packets, docstring: "A counter of TCP-SYN packets")
         end
       end
 
       def handle(packet)
         return unless packet.is_a?(PacketFu::TCPPacket) &&
-          packet.tcp_flags.syn == 1
+                      packet.tcp_flags.syn == 1
 
         @counter.increment
       end

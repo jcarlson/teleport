@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module TAC
   module Models
     class TTLCollection
       def initialize(ttl = 60)
         @ttl = ttl
-        @timestamps = Hash.new
+        @timestamps = {}
       end
 
       def <<(value)
@@ -29,7 +31,7 @@ module TAC
 
       def expire_values!
         # discard values older than TTL
-        @timestamps.reject! { |_, time| time < Time.now - @ttl}
+        @timestamps.reject! { |_, time| time < Time.now - @ttl }
       end
     end
   end

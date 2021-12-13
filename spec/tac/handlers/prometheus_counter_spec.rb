@@ -1,11 +1,13 @@
-require 'spec_helper'
+# frozen_string_literal: true
+
+require "spec_helper"
 
 RSpec.describe TAC::Handlers::PrometheusCounter do
-  describe '#handle(packet)' do
-    let(:ip_saddr) { '1.2.3.4' }
-    let(:tcp_sport) { rand(1..65535) }
-    let(:ip_daddr) { '127.0.0.1' }
-    let(:tcp_dport) { rand(1..65535) }
+  describe "#handle(packet)" do
+    let(:ip_saddr) { "1.2.3.4" }
+    let(:tcp_sport) { rand(1..65_535) }
+    let(:ip_daddr) { "127.0.0.1" }
+    let(:tcp_dport) { rand(1..65_535) }
     let(:tcp_syn) { true }
     let(:packet) do
       PacketFu::TCPPacket.new.tap do |pkt|
@@ -25,28 +27,28 @@ RSpec.describe TAC::Handlers::PrometheusCounter do
     before do
       allow(Prometheus::Client)
         .to receive(:registry)
-          .and_return(registry)
+        .and_return(registry)
     end
 
-    it 'increments a count about the new connection' do
+    it "increments a count about the new connection" do
       handler.handle packet
 
       expect(counter).to have_received(:increment)
     end
 
-    context 'when packet is not a TCPPacket' do
+    context "when packet is not a TCPPacket" do
       let(:packet) { PacketFu::InvalidPacket.new }
 
-      it 'ignores packet' do
+      it "ignores packet" do
         handler.handle packet
         expect(counter).to_not have_received(:increment)
       end
     end
 
-    context 'when packet is not a TCP-SYN packet' do
+    context "when packet is not a TCP-SYN packet" do
       let(:tcp_syn) { false }
 
-      it 'ignores packet' do
+      it "ignores packet" do
         handler.handle packet
         expect(counter).to_not have_received(:increment)
       end

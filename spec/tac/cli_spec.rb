@@ -1,21 +1,23 @@
-require 'spec_helper'
-require 'tac/cli'
+# frozen_string_literal: true
+
+require "spec_helper"
+require "tac/cli"
 
 RSpec.describe TAC::CLI do
   subject(:cli) { described_class.new [], [] }
 
-  describe '#version' do
+  describe "#version" do
     before do
       allow($stdout)
         .to receive(:puts)
     end
 
-    it 'prints the current version' do
+    it "prints the current version" do
       cli.version
 
       expect($stdout)
         .to have_received(:puts)
-          .with(TAC::VERSION)
+        .with(TAC::VERSION)
     end
   end
 end

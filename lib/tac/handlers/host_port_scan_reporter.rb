@@ -1,5 +1,7 @@
-require 'tac/ttl_collection'
-require 'tac/handlers/base_handler'
+# frozen_string_literal: true
+
+require "tac/ttl_collection"
+require "tac/handlers/base_handler"
 
 module TAC
   module Handlers
@@ -11,14 +13,14 @@ module TAC
       def initialize(ifconfig:, **options)
         super
         @ifconfig = ifconfig
-        @connections = Hash.new
-        @connections.default_proc = -> (hash, key) { hash[key] = TAC::Models::TTLCollection.new(TTL) }
+        @connections = {}
+        @connections.default_proc = ->(hash, key) { hash[key] = TAC::Models::TTLCollection.new(TTL) }
       end
 
       def handle(packet)
         return unless packet.is_a?(PacketFu::TCPPacket) &&
-          packet.tcp_flags.syn == 1 &&
-          packet.ip_daddr == ifconfig[:ip_saddr]
+                      packet.tcp_flags.syn == 1 &&
+                      packet.ip_daddr == ifconfig[:ip_saddr]
 
         source = packet.ip_saddr
 
@@ -26,20 +28,25 @@ module TAC
         client_connections = @connections[source]
         connection_count = client_connections << packet.tcp_dport
 
-        # print a message if the client has more than three unique port connections in past minute
-        if connection_count > 3
-          report = 'Port scan detected: %s -> %s on ports %s' % [
-            packet.ip_saddr,
-            packet.ip_daddr,
-            client_connections.values.sort.join(",")
-          ]
+        return unless connection_count > 3
 
-          log report
-          block_source packet.ip_saddr
-        end
+        log_port_scan(client_connections, packet)
+        block_source packet.ip_saddr
       end
 
       private
+
+      def log_port_scan(client_connections, packet)
+        # print a message if the client has more than three unique port connections in past minute
+        report = format(
+          "Port scan detected: %<source>s -> %<destination>s on ports %<ports>s",
+          source: packet.ip_saddr,
+          destination: packet.ip_daddr,
+          ports: client_connections.values.sort.join(",")
+        )
+
+        log report
+      end
 
       def block_source(source)
         rule = "-p tcp -s #{source} -d #{ifconfig[:ip_saddr]} -j DROP"
@@ -48,7 +55,10 @@ module TAC
         # For the purposes of this code challenge, we will un-block the
         # source IP after a short time, since anyone testing this probably
         # doesn't want to be blocked out forever ;-)
-        Thread.new { sleep TTL; system "iptables -D INPUT #{rule}" }
+        Thread.new do
+          sleep TTL
+          system "iptables -D INPUT #{rule}"
+        end
       end
     end
   end

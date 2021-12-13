@@ -1,4 +1,6 @@
-require 'packetfu'
+# frozen_string_literal: true
+
+require "packetfu"
 
 module TAC
   class Capture
