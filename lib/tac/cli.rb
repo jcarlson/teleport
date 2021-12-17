@@ -13,21 +13,13 @@ module TAC
                   default: PacketFu::Utils.default_int,
                   desc: "Specify a network interface to monitor"
 
-    method_option :filter,
-                  alias: :bpf,
-                  default: "tcp and tcp[tcpflags] == tcp-syn and dst host %<ip_saddr>s",
-                  desc: "BPF filter to use when filtering packets"
-
     method_option :port,
                   default: "8080",
                   desc: "TCP port on which to listen and serve up Prometheus metrics"
 
     def start
       Thread.new do
-        Capture.new(options[:iface], options[:filter]).start
-      rescue RuntimeError => err
-        puts err
-        exit 1
+        Capture.new(options[:iface]).start
       end
 
       # For this exercise, we're ignoring SSL since it would require a certificate; in production
@@ -42,6 +34,7 @@ module TAC
 
     desc "version", "Print the current version"
     def version
+      puts "Foo! Bar!"
       puts TAC::VERSION
     end
   end

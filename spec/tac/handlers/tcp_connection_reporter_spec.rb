@@ -10,13 +10,7 @@ RSpec.describe TAC::Handlers::TcpConnectionReporter do
     let(:tcp_dport) { rand(1..65_535) }
     let(:tcp_syn) { true }
     let(:packet) do
-      PacketFu::TCPPacket.new.tap do |pkt|
-        pkt.ip_saddr = ip_saddr
-        pkt.tcp_sport = tcp_sport
-        pkt.ip_daddr = ip_daddr
-        pkt.tcp_dport = tcp_dport
-        pkt.tcp_flags = PacketFu::TcpFlags.new syn: tcp_syn
-      end
+      TAC::Packet.new ip_saddr, tcp_sport, ip_daddr, tcp_dport
     end
 
     subject(:handler) { described_class.new }
@@ -30,24 +24,6 @@ RSpec.describe TAC::Handlers::TcpConnectionReporter do
 
       expect(described_class).to have_received(:log)
         .with("New Connection: #{ip_saddr}:#{tcp_sport} -> #{ip_daddr}:#{tcp_dport}")
-    end
-
-    context "when packet is not a TCPPacket" do
-      let(:packet) { PacketFu::InvalidPacket.new }
-
-      it "ignores packet" do
-        handler.handle packet
-        expect(described_class).to_not have_received(:log)
-      end
-    end
-
-    context "when packet is not a TCP-SYN packet" do
-      let(:tcp_syn) { false }
-
-      it "ignores packet" do
-        handler.handle packet
-        expect(described_class).to_not have_received(:log)
-      end
     end
   end
 end

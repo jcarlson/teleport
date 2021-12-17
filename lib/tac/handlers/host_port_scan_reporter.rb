@@ -18,20 +18,16 @@ module TAC
       end
 
       def handle(packet)
-        return unless packet.is_a?(PacketFu::TCPPacket) &&
-                      packet.tcp_flags.syn == 1 &&
-                      packet.ip_daddr == ifconfig[:ip_saddr]
-
-        source = packet.ip_saddr
+        source = packet.s_addr
 
         # record the client connection
         client_connections = @connections[source]
-        connection_count = client_connections << packet.tcp_dport
+        connection_count = client_connections << packet.d_port
 
         return unless connection_count > 3
 
         log_port_scan(client_connections, packet)
-        block_source packet.ip_saddr
+        block_source packet.s_addr
       end
 
       private
@@ -40,8 +36,8 @@ module TAC
         # print a message if the client has more than three unique port connections in past minute
         message = format(
           "Port scan detected: %<source>s -> %<destination>s on ports %<ports>s",
-          source: packet.ip_saddr,
-          destination: packet.ip_daddr,
+          source: packet.s_addr,
+          destination: packet.d_addr,
           ports: client_connections.values.sort.join(",")
         )
 
@@ -52,9 +48,9 @@ module TAC
         rule = "-p tcp -s #{source} -d #{ifconfig[:ip_saddr]} -j DROP"
 
         # `system` does not raise an error if the system call fails, so if you don't have iptables installed,
-        # this just won't do anything. In a production environment, we could pretty easily manage the system dependencies
-        # so I haven't spent any time here checking if this call "worked".
-        system "iptables -A INPUT #{rule}"
+        # this just won't do anything. In a production environment, we could pretty easily manage the system
+        # dependencies so I haven't spent any time here checking if this call "worked".
+        system "iptables -I INPUT #{rule}"
 
         # For the purposes of this code challenge, we will un-block the
         # source IP after a short time, since anyone testing this probably

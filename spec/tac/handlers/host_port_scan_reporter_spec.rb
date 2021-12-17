@@ -11,13 +11,7 @@ RSpec.describe TAC::Handlers::HostPortScanReporter do
 
     let(:packets) do
       4.times.map do
-        PacketFu::TCPPacket.new.tap do |pkt|
-          pkt.ip_saddr = source_addr
-          pkt.tcp_sport = rand(1024..65_535)
-          pkt.ip_daddr = dest_addr
-          pkt.tcp_dport = rand(1024..65_535)
-          pkt.tcp_flags = PacketFu::TcpFlags.new syn: tcp_syn
-        end
+        TAC::Packet.new source_addr, rand(1024..65_535), dest_addr, rand(1024..65_535)
       end
     end
 
@@ -41,33 +35,6 @@ RSpec.describe TAC::Handlers::HostPortScanReporter do
       end
     end
 
-    context "when packet is not a TCPPacket" do
-      let(:packets) { 4.times.map { PacketFu::InvalidPacket.new } }
-
-      it "ignores packet" do
-        handler.handle packets.last
-        expect(described_class).to_not have_received(:log)
-      end
-    end
-
-    context "when packet is not a TCP-SYN packet" do
-      let(:tcp_syn) { false }
-
-      it "ignores packet" do
-        handler.handle packets.last
-        expect(described_class).to_not have_received(:log)
-      end
-    end
-
-    context "when packet is not destined for host interface" do
-      let(:dest_addr) { "192.168.1.1" }
-
-      it "ignores packet" do
-        handler.handle packets.last
-        expect(described_class).to_not have_received(:log)
-      end
-    end
-
     context "when source ip connects to more than 3 host ports in more than a minute" do
       it "prints a formatted message about the port scan" do
         Timecop.freeze(Time.now + 70)
@@ -81,7 +48,7 @@ RSpec.describe TAC::Handlers::HostPortScanReporter do
       it "prints a formatted message about the port scan" do
         handler.handle packets.last
 
-        ports = packets.map(&:tcp_dport).sort.join(",")
+        ports = packets.map(&:d_port).sort.join(",")
 
         expect(described_class).to have_received(:log)
           .with("Port scan detected: #{source_addr} -> #{dest_addr} on ports #{ports}")
@@ -92,7 +59,7 @@ RSpec.describe TAC::Handlers::HostPortScanReporter do
 
         expect(subject)
           .to have_received(:system)
-          .with("iptables -A INPUT -p tcp -s #{source_addr} -d #{dest_addr} -j DROP")
+          .with("iptables -I INPUT -p tcp -s #{source_addr} -d #{dest_addr} -j DROP")
       end
     end
   end

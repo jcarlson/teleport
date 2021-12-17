@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  tac:
+    build: .
+    privileged: true
+    entrypoint: ""
+    command: "tail -f /dev/null"
+    volumes:
+      - .:/opt/tac
+
+  ubuntu:
+    image: ubuntu:20.04
+    command: "tail -f /dev/null"

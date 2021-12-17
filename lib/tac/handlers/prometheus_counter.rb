@@ -14,10 +14,7 @@ module TAC
         end
       end
 
-      def handle(packet)
-        return unless packet.is_a?(PacketFu::TCPPacket) &&
-                      packet.tcp_flags.syn == 1
-
+      def handle(_)
         @counter.increment
       end
     end

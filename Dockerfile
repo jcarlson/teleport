@@ -2,7 +2,7 @@ FROM ruby:3.0.2
 
 # Install system dependencies for packet capture
 RUN apt-get update && \
-    apt-get install -y libpcap-dev ruby-build iptables net-tools
+    apt-get install -y libpcap-dev ruby-build tcpdump iptables net-tools
 
 # For development, we can debug in a docker container, which is nice
 # For production, we would exclude these dependencies using multi-stage Dockerfiles or similar
